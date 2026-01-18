@@ -1,0 +1,94 @@
+🐳 Docker Management (Control the Environment)
+These commands control the containers themselves.
+
+# Start all services in the background
+docker compose up -d
+
+# Stop all services
+docker compose down
+
+# Stop services and remove volumes (DELETES DATABASE DATA - use with caution)
+docker compose down -v
+
+# View status of all containers
+docker compose ps
+
+# View real-time logs for the App (PHP) container
+docker compose logs -f app
+
+# View real-time logs for Nginx (useful for 404/500 errors)
+docker compose logs -f webserver
+
+# Restart a specific service (e.g., if Nginx acts up)
+docker compose restart webserver
+
+⚡ Laravel Artisan (Daily Development)
+Since you are inside Docker, you must prefix every php artisan command with docker compose exec app.
+
+# Run migrations
+docker compose exec app php artisan migrate
+
+# Create a Controller
+docker compose exec app php artisan make:controller ProductController
+
+# Create a Model with Migration
+docker compose exec app php artisan make:model Product -m
+
+# Clear configuration cache (Do this if .env changes don't seem to work)
+docker compose exec app php artisan config:clear
+
+# Clear application cache
+docker compose exec app php artisan cache:clear
+
+# Interact with your database/code
+docker compose exec app php artisan tinker
+
+# Create a symlink for storage (fixes image upload issues)
+docker compose exec app php artisan storage:link
+
+📦 Composer (Installing Libraries)
+Use these to add packages like Laravel Sanctum, Debugbar, etc.
+# Install a new package
+docker compose exec app composer require laravel/sanctum
+
+# Update all packages
+docker compose exec app composer update
+
+# Install dependencies from composer.json (if you just cloned the repo)
+docker compose exec app composer install
+
+🐘 Database & Redis (Direct Access)
+1. Access PostgreSQL (SQL Shell)
+This connects you directly to the database to run raw SQL queries.
+
+docker compose exec db psql -U admin -d organic-shop-db
+Type \q to exit.
+
+2. Access Redis (CLI)
+Use this to see what data is stored (e.g., active sessions).
+
+docker compose exec redis redis-cli
+
+Useful commands inside Redis CLI:
+KEYS *           # List all keys
+GET "session_key_here" # View a specific key
+FLUSHALL         # Delete everything (Clear Cache)
+exit             # Exit
+
+🛠 Troubleshooting / Fixing Permissions
+If you ever get "Permission Denied" errors creating files or logs on Linux:
+
+# Give your user ownership of the src folder
+sudo chown -R $USER:$USER src
+
+If you change the Dockerfile or nginx/default.conf, you must rebuild:
+docker compose up -d --build
+
+⌨️ Pro Tip: Create Aliases
+Typing docker compose exec app ... every time is tedious.
+
+On Linux/Mac, add these to your ~/.bashrc or ~/.zshrc file to save time:
+alias artisan='docker compose exec app php artisan'
+alias composer='docker compose exec app composer'
+
+After adding, run source ~/.bashrc. Then you can just type artisan migrate!

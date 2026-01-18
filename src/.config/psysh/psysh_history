@@ -1,0 +1,41 @@
+Redis::set('test', 'Redis is connected!'); Redis::get('test');
+exit
+\Illuminate\Support\Facades\Redis::set('test', 'It works!');
+\Illuminate\Support\Facades\Redis::get('test');
+\Illuminate\Support\Facades\Redis::set('test', 'It works!');
+\Illuminate\Support\Facades\Redis::set('test', 'Finally working!');
+\Illuminate\Support\Facades\Redis::get('test');
+exit
+\Illuminate\Support\Facades\Redis::set('test', 'Finally working!');
+\Illuminate\Support\Facades\Redis::get('test');
+exit
+\App\Models\User::create(['name' => 'Admin User', 'email' => 'admin@example.com', 'password' => bcrypt('password123')]);
+exit
+// 1. Create Role
+ $role = \App\Models\Role::create(['name' => 'Admin', 'slug' => 'admin']);
+// 2. Create User WITH Username
+ $user = \App\Models\User::create([
+    'name' => 'Super Admin',
+    'email' => 'admin@example.com',
+    'username' => 'admin_user', // <--- The new column
+    'password' => bcrypt('password')
+]);
+// 3. Assign Role
+ $user->roles()->attach($role->id);
+echo "User Created: " . $user->username;
+exit
+$user = \App\Models\User::create(["name" => "Chann Yeng", "email" => "channyengcambo@gmail.com", "password" => bycrypt('123456')])
+$user = \App\Models\User::create(["name" => "Chann Yeng", "email" => "channyengcambo@gmail.com", "password" => bcrypt('123456')])
+$user = \App\Models\User::create(["name" => "Chann Yeng", "email" => "channyengcambo@gmail.com","username" => "admin", "password" => bcrypt('123456')])
+exit
+DB::select('select current_database()');
+exit
+DB::select('show search_path');
+exit
+config('database.default');
+DB::table('users')->first();
+exit
+Log::info('log works now');
+
+Log::info("Work");
+exit
