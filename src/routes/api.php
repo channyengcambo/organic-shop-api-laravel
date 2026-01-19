@@ -3,7 +3,9 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\FrontEndPath\NavigationMenuItemsController;
 
+//Admin
 Route::prefix('v1')->group(function () {
     // Public Route
     Route::post('/auth/login', [AuthController::class, 'login']);
@@ -21,4 +23,9 @@ Route::prefix('v1')->group(function () {
 
 
     });
+});
+
+//Public
+Route::prefix('v1/front-end-path')->group(function () {
+    Route::get('/navigation-menu-items', [NavigationMenuItemsController::class, 'index']);
 });
