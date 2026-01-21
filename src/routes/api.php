@@ -21,7 +21,11 @@ Route::prefix('v1')->group(function () {
 //        User
         Route::get('/me', [UserController::class, 'me']);
 
-
+//        Navigation Menu
+        Route::post("/navigation-menu-items", [NavigationMenuItemsController::class, 'store']);
+        Route::post('/navigation-menu-items/{parentId}/child',[NavigationMenuItemsController::class, 'storeChild']);
+        Route::put("/navigation-menu-items/{id}", [NavigationMenuItemsController::class, 'update']);
+        Route::delete("/navigation-menu-items/{id}", [NavigationMenuItemsController::class, 'destroy']);
     });
 });
 

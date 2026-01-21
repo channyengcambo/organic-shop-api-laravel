@@ -3,44 +3,69 @@
 namespace App\Http\Controllers\Api\V1\FrontEndPath;
 
 use App\Http\Controllers\Controller;
-use App\Models\FrontEndPath\NavigationMenuItems\NavigationMenuItems;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\AdminPath\NavigationMenuItemRequests\CreateNavigationMenuItemRequest;
+use App\Http\Requests\AdminPath\NavigationMenuItemRequests\CreatNavigationMenuItemRequest;
+use App\Http\Requests\AdminPath\NavigationMenuItemRequests\UpdateNavigationMenuItemRequest;
+use App\Services\FrontEndPath\NavigationMenuItemService;
+use App\Traits\ApiResponse;
 
 class NavigationMenuItemsController extends Controller
 {
-    public function index()
+    use ApiResponse;
+
+    public function __construct(
+        protected NavigationMenuItemService $navigationMenuItemService
+    )
     {
-        $user = Auth::user();
-
-        // 1️⃣ Default roles = PUBLIC
-        $roleNames = ['PUBLIC'];
-
-        // 2️⃣ If user logged in → add user roles
-        if ($user && $user->roles) {
-            $roleNames = array_unique(array_merge(
-                $roleNames,
-                $user->roles->pluck('name')->toArray()
-            ));
-        }
-
-        // 3️⃣ Query menu
-        $menus = NavigationMenuItems::query()
-            ->whereNull('parent_id')
-            ->where('is_active', true)
-            ->whereHas('roles', function ($q) use ($roleNames) {
-                $q->whereIn('name', $roleNames);
-            })
-            ->with(['children' => function ($q) use ($roleNames) {
-                $q->where('is_active', true)
-                    ->whereHas('roles', function ($q2) use ($roleNames) {
-                        $q2->whereIn('name', $roleNames);
-                    })
-                    ->orderBy('order_index');
-            }])
-            ->orderBy('order_index')
-            ->get();
-
-        return response()->json($menus);
     }
 
+    public function index()
+    {
+        $menus = $this->navigationMenuItemService->getMenusForUser(auth()->user());
+
+        return $this->successResponse(
+            $menus,
+            'Navigation menu items loaded successfully!'
+        );
+    }
+
+    public function store(CreateNavigationMenuItemRequest $request)
+    {
+        $menu = $this->navigationMenuItemService->create($request->validated());
+
+        return $this->successResponse(
+            $menu,
+            'Navigation menu item created successfully!',
+            201
+        );
+    }
+
+    public function storeChild(CreateNavigationMenuItemRequest $request, int $parentId)
+    {
+        $child = $this->navigationMenuItemService->createChild(
+            $parentId,
+            $request->validated()
+        );
+
+        return $this->successResponse($child, 'Child menu created successfully!', 201);
+    }
+
+    public function update(UpdateNavigationMenuItemRequest $request, int $id)
+    {
+        $menu = $this->navigationMenuItemService->update($id, $request->validated());
+
+        return $this->successResponse(
+            $menu,
+            'Menu updated successfully'
+        );
+    }
+
+    public function destroy(int $id)
+    {
+        $this->navigationMenuItemService->delete($id);
+
+        return $this->successResponseNoData(
+            'Menu deleted successfully'
+        );
+    }
 }
