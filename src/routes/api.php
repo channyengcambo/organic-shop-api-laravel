@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\FrontEndPath\MainHeroController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\FrontEndPath\NavigationMenuItemsController;
@@ -23,13 +24,19 @@ Route::prefix('v1')->group(function () {
 
 //        Navigation Menu
         Route::post("/navigation-menu-items", [NavigationMenuItemsController::class, 'store']);
-        Route::post('/navigation-menu-items/{parentId}/child',[NavigationMenuItemsController::class, 'storeChild']);
+        Route::post('/navigation-menu-items/{parentId}/child', [NavigationMenuItemsController::class, 'storeChild']);
         Route::put("/navigation-menu-items/{id}", [NavigationMenuItemsController::class, 'update']);
         Route::delete("/navigation-menu-items/{id}", [NavigationMenuItemsController::class, 'destroy']);
     });
+
+//    Main Hero
+    Route::post("/main-heroes", [MainHeroController::class, 'store']);
+    Route::post("/main-heroes/{id}", [MainHeroController::class, 'updateMainHero']);
+    Route::delete("/main-heroes/{id}", [MainHeroController::class, 'destroy']);
 });
 
 //Public
 Route::prefix('v1/front-end-path')->group(function () {
     Route::get('/navigation-menu-items', [NavigationMenuItemsController::class, 'index']);
+    Route::get('/main-heroes/list', [MainHeroController::class, 'getAllPublicMainHeroes']);
 });

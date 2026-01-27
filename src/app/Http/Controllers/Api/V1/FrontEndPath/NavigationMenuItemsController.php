@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1\FrontEndPath;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AdminPath\NavigationMenuItemRequests\CreateNavigationMenuItemRequest;
 use App\Http\Requests\AdminPath\NavigationMenuItemRequests\CreatNavigationMenuItemRequest;
-use App\Http\Requests\AdminPath\NavigationMenuItemRequests\UpdateNavigationMenuItemRequest;
+use App\Http\Requests\FrontEndPath\NavigationMenuItemRequests\CreateNavigationMenuItemRequest;
+use App\Http\Requests\FrontEndPath\NavigationMenuItemRequests\UpdateNavigationMenuItemRequest;
 use App\Services\FrontEndPath\NavigationMenuItemService;
 use App\Traits\ApiResponse;
 

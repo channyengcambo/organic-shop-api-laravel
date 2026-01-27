@@ -31,6 +31,12 @@ docker compose exec app php artisan migrate
 # Create a Controller
 docker compose exec app php artisan make:controller ProductController
 
+# Create a Service
+docker compose exec app php artisan make:class Services/MyService
+
+# Create a Migration
+docker compose exec app php artisan make:migration create_your_table_name_table
+
 # Create a Model with Migration
 docker compose exec app php artisan make:model Product -m
 
