@@ -40,6 +40,16 @@ docker compose exec app php artisan make:migration create_your_table_name_table
 # Create a Model with Migration
 docker compose exec app php artisan make:model Product -m
 
+#Create Schedule
+ocker compose exec app php artisan make:job StoreAuditLogJob
+
+#Run queue worker
+- dev
+docker compose exec app php artisan queue:work redis --queue=audit
+
+-prod
+docker compose exec app php artisan queue:work redis --queue=audit --daemon
+
 # Clear configuration cache (Do this if .env changes don't seem to work)
 docker compose exec app php artisan config:clear
 
