@@ -5,6 +5,8 @@ namespace App\Services\FrontEndPath;
 use App\Models\FrontEndPath\NavigationMenuItems\NavigationMenuItems;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LogicException;
@@ -31,7 +33,17 @@ class NavigationMenuItemService
     }
 
 //    Public
+
     public function getMenusForUser(?User $user): Collection
+    {
+        return Cache::remember(
+            'public_navigation_menu',
+            now()->addMinutes(10),
+            fn() => $this->loadPublicMenus($user)
+        );
+    }
+
+    protected function loadPublicMenus(?User $user): Collection
     {
         // 1️⃣ Default role
         $roleNames = ['PUBLIC'];
@@ -44,8 +56,7 @@ class NavigationMenuItemService
             ));
         }
 
-        // 3️⃣ Query top-level menus
-        $menus = NavigationMenuItems::query()
+        return NavigationMenuItems::query()
             ->whereNull('parent_id')
             ->where('is_active', true)
             ->whereHas('roles', fn($q) => $q->whereIn('name', $roleNames))
@@ -55,9 +66,6 @@ class NavigationMenuItemService
             ])
             ->orderBy('order_index')
             ->get();
-
-        // 4️⃣ Compute full route recursively
-        return $menus;
     }
 
     /**
@@ -108,6 +116,7 @@ class NavigationMenuItemService
                 $menu->roles()->sync($data['role_ids']);
             }
 
+            $this->clearPublicMenuCache();
             return $menu->load('roles');
         });
     }
@@ -161,6 +170,7 @@ class NavigationMenuItemService
                 $menu->roles()->sync($data['role_ids']);
             }
 
+            $this->clearPublicMenuCache();
             return $menu;
         });
     }
@@ -180,6 +190,8 @@ class NavigationMenuItemService
             $menu->roles()->detach();
             $menu->delete();
         });
+
+        $this->clearPublicMenuCache();
     }
 
     /**
@@ -192,5 +204,12 @@ class NavigationMenuItemService
             $child->save();
             $this->updateChildrenFullPath($child);
         }
+
+        $this->clearPublicMenuCache();
+    }
+
+    private function clearPublicMenuCache(): void
+    {
+        Cache::forget('public_navigation_menu');
     }
 }

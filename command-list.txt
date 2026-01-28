@@ -108,3 +108,8 @@ alias artisan='docker compose exec app php artisan'
 alias composer='docker compose exec app composer'
 
 After adding, run source ~/.bashrc. Then you can just type artisan migrate!
+
+
+#Clear Cache
+Cache::forget('public_navigation_menu');
+

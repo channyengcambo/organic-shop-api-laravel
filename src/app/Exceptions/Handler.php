@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Traits\ApiResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +21,6 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e): \Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($request->expectsJson() || $request->is('api/*')) {
-
             // 401 - Unauthenticated
             if ($e instanceof AuthenticationException) {
                 return $this->errorResponse(
@@ -45,6 +45,15 @@ class Handler extends ExceptionHandler
                     'Validation failed',
                     $e->errors(),
                     HttpStatus::UNPROCESSABLE_ENTITY->value
+                );
+            }
+
+            // 429 - Too many request
+            if ($e instanceof TooManyRequestsHttpException) {
+                return $this->errorResponse(
+                    'Too many requests!',
+                    $e->getMessage(),
+                    HttpStatus::TOO_MANY_REQUESTS->value
                 );
             }
 

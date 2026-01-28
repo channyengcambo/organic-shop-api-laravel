@@ -8,6 +8,7 @@ use App\Http\Requests\FrontEndPath\NavigationMenuItemRequests\CreateNavigationMe
 use App\Http\Requests\FrontEndPath\NavigationMenuItemRequests\UpdateNavigationMenuItemRequest;
 use App\Services\FrontEndPath\NavigationMenuItemService;
 use App\Traits\ApiResponse;
+use Illuminate\Support\Facades\Cache;
 
 class NavigationMenuItemsController extends Controller
 {
