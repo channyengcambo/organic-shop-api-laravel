@@ -4,9 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Traits\ApiResponse;
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Http\ResponseTrait;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class PublicApiKeyMiddleware
 {
@@ -14,13 +12,22 @@ class PublicApiKeyMiddleware
 
     public function handle($request, Closure $next)
     {
+        // Let CORS middleware handle OPTIONS
+        if ($request->isMethod('OPTIONS')) {
+            return response()->noContent(204);
+        }
+
         $apiKey = $request->header('X-APP-KEY');
 
-        if ($apiKey !== config('app.public_api_key')) {
-            return $this->errorResponse(
-                'Invalid public API key',
-                403
-            );
+        Log::info('Public API request', [
+            'api_key' => $apiKey,
+            'path' => $request->path(),
+            'method' => $request->method(),
+            'ip' => $request->ip(),
+        ]);
+
+        if (!$apiKey || !hash_equals(config('app.public_api_key'), $apiKey)) {
+            return $this->errorResponse('Invalid public API key', 403);
         }
 
         return $next($request);

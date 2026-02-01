@@ -6,7 +6,8 @@ use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\FrontEndPath\NavigationMenuItemsController;
 
-Route::middleware(['audit', 'public.key', 'throttle:60,1'])->group(function () {
+//'public.key','api'
+Route::middleware(['audit', 'throttle:60,1'])->group(function () {
     //Admin
     Route::prefix('v1')->group(function () {
         // Public Route
@@ -46,7 +47,7 @@ Route::middleware(['audit', 'public.key', 'throttle:60,1'])->group(function () {
 
 //Public
     Route::prefix('v1/front-end-path')
-        ->middleware(['public.readonly', 'public.key', 'api'])
+        ->middleware(['public.readonly'])
         ->group(function () {
             Route::get('/navigation-menu-items', [NavigationMenuItemsController::class, 'index']);
             Route::get('/main-heroes/list', [MainHeroController::class, 'getAllPublicMainHeroes']);

@@ -10,7 +10,7 @@ class PublicReadOnlyMiddleware
 {
     public function handle($request, $next)
     {
-        if (!in_array($request->method(), ['GET', 'HEAD'])) {
+        if (!in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'])) {
             return response()->json(['message' => 'Method not allowed'], 405);
         }
 
